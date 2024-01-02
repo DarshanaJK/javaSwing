@@ -26,8 +26,6 @@ class Notepad extends JFrame{
 
         mainMenuBar = new JMenuBar();
 
-
-
         fileMenu = new JMenu("File");
         item1 = new JMenuItem("Menu Item 1");
         item2 = new JMenuItem("Menu Item 2");
