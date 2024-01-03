@@ -1,75 +1,128 @@
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
-class Notepad extends JFrame{
 
-    TextArea textArea;
+class DisplayWindow extends JFrame{
+    private final JLabel displayLabel;
 
-    JMenuBar mainMenuBar;
-
-    JMenu fileMenu;
-    JMenu editMenu;
-    JMenu viewMenu;
-
-    JMenuItem item1;
-    JMenuItem item2;
-    JMenuItem item3;
-    JMenuItem item4;
-    JMenuItem item5;
-    JMenuItem item6;
-
-
-    Notepad(){
-        setSize(600, 500);
-        setTitle("Untitled");
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+    DisplayWindow(){
+        setSize(300, 400);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setTitle("Display Window");
         setLocationRelativeTo(null);
+        setLayout(new FlowLayout());
 
-        mainMenuBar = new JMenuBar();
-
-        fileMenu = new JMenu("File");
-        item1 = new JMenuItem("Menu Item 1");
-        item2 = new JMenuItem("Menu Item 2");
-        fileMenu.add(item1);
-        fileMenu.add(item2);
-        mainMenuBar.add(fileMenu);
-
-        editMenu = new JMenu("Edit");
-        item3 = new JMenuItem("Menu Item 3");
-        item4 = new JMenuItem("Menu Item 4");
-        editMenu.add(item3);
-        editMenu.add(item4);
-        mainMenuBar.add(editMenu);
-
-        viewMenu = new JMenu("View");
-        item5 = new JMenuItem("Menu Item 5");
-        item6 = new JMenuItem("Menu Item 6");
-        viewMenu.add(item5);
-        viewMenu.add(item6);
-        mainMenuBar.add(viewMenu);
-
-
-
-        setJMenuBar(mainMenuBar);
-
-
-        textArea = new TextArea();
-        textArea.setFont(new Font("", Font.BOLD, 16));
-
-        add("Center", textArea);
-
-
-        JScrollPane scrollPane = new JScrollPane(textArea);
-        add("Center",scrollPane);
-
+        displayLabel = new JLabel("0");
+        displayLabel.setFont(new Font("", Font.BOLD, 25));
+        add(displayLabel);
         setVisible(true);
     }
 
-
-
+    public void displayWaterLevel(int waterLevel){
+        displayLabel.setText(Integer.toString(waterLevel));
+    }
 }
 
-class Example{
+class AlarmWindow extends JFrame{
+    private final JLabel alarmLabel;
+
+    AlarmWindow(){
+        setSize(300, 400);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setTitle("Alarm Window");
+        setLocationRelativeTo(null);
+        setLayout(new FlowLayout());
+
+
+        alarmLabel = new JLabel("OFF");
+        alarmLabel.setFont(new Font("", Font.BOLD, 25));
+        add(alarmLabel);
+        setVisible(true);
+    }
+
+    public void operateAlarm(int waterLevel){
+        alarmLabel.setText( waterLevel >= 50 ? "ON" : "OFF");
+    }
+}
+
+
+class  SplitterWindow extends JFrame{
+    private final JLabel splitterLabel;
+
+    SplitterWindow(){
+        setSize(300, 400);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setTitle("Alarm Window");
+        setLocationRelativeTo(null);
+        setLayout(new FlowLayout());
+
+
+        splitterLabel = new JLabel("OFF");
+        splitterLabel.setFont(new Font("", Font.BOLD, 25));
+        add(splitterLabel);
+        setVisible(true);
+    }
+
+    public void split(int waterLevel){
+        splitterLabel.setText( waterLevel >= 75 ? "Splitter ON" : "Splitter OFF");
+    }
+}
+
+
+
+class WaterTankWindow extends JFrame{
+
+    private AlarmWindow alarmWindow;
+    private DisplayWindow displayWindow;
+    private SplitterWindow splitterWindow;
+    private final JSlider waterLevelSlider;
+
+    WaterTankWindow(){
+        setSize(300, 400);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setTitle("Water Tank Window");
+        setLocationRelativeTo(null);
+        setLayout(new FlowLayout());
+
+
+        waterLevelSlider = new JSlider(JSlider.VERTICAL, 0, 100, 0);
+        waterLevelSlider.setFont(new Font("", Font.BOLD, 25));
+        waterLevelSlider.setMajorTickSpacing(25);
+        waterLevelSlider.setMinorTickSpacing(5);
+        waterLevelSlider.setPaintLabels(true);
+
+
+        waterLevelSlider.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                int waterLevel = waterLevelSlider.getValue();
+                displayWindow.displayWaterLevel(waterLevel);
+                alarmWindow.operateAlarm(waterLevel);
+                splitterWindow.split(waterLevel);
+            }
+        });
+        add(waterLevelSlider);
+    }
+
+    public void setAlarmWindow(AlarmWindow alarmWindow) {
+        this.alarmWindow = alarmWindow;
+    }
+    public void setDisplayWindow(DisplayWindow displayWindow) {
+        this.displayWindow = displayWindow;
+    }
+    public void setSplitterWindow(SplitterWindow splitterWindow) {
+        this.splitterWindow = splitterWindow;
+    }
+}
+
+
+class Demo {
     public static void main(String[] args) {
-        new Notepad();
+        WaterTankWindow wt = new WaterTankWindow();
+        wt.setAlarmWindow(new AlarmWindow());
+        wt.setDisplayWindow(new DisplayWindow());
+        wt.setSplitterWindow(new SplitterWindow());
+        wt.setVisible(true);
     }
 }
