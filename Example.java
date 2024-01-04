@@ -3,126 +3,113 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 
-class DisplayWindow extends JFrame{
+
+class WaterLevelObserver extends JFrame{
+
+    public void update(){
+
+    }
+
+    public void update(int waterLevel) {
+
+    }
+}
+
+
+class DisplayWindow extends WaterLevelObserver {
     private final JLabel displayLabel;
 
-    DisplayWindow(){
-        setSize(300, 400);
+    DisplayWindow() {
+        setSize(300, 300);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setTitle("Display Window");
         setLocationRelativeTo(null);
         setLayout(new FlowLayout());
-
         displayLabel = new JLabel("0");
         displayLabel.setFont(new Font("", Font.BOLD, 25));
         add(displayLabel);
         setVisible(true);
     }
-
-    public void displayWaterLevel(int waterLevel){
-        displayLabel.setText(Integer.toString(waterLevel));
+    public void update(int waterLevel) {
+        displayLabel.setText(waterLevel + " ");// Integer.toString(waterLevel);
     }
 }
-
-class AlarmWindow extends JFrame{
+class AlarmWindow extends WaterLevelObserver {
     private final JLabel alarmLabel;
-
-    AlarmWindow(){
-        setSize(300, 400);
+    AlarmWindow() {
+        setSize(300, 300);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setTitle("Alarm Window");
         setLocationRelativeTo(null);
         setLayout(new FlowLayout());
-
-
         alarmLabel = new JLabel("OFF");
         alarmLabel.setFont(new Font("", Font.BOLD, 25));
         add(alarmLabel);
         setVisible(true);
     }
-
-    public void operateAlarm(int waterLevel){
-        alarmLabel.setText( waterLevel >= 50 ? "ON" : "OFF");
+    public void update(int waterLevel) {
+        alarmLabel.setText(waterLevel >= 50 ? "ON" : "OFF");
     }
 }
-
-
-class  SplitterWindow extends JFrame{
+class SplitterWindow extends WaterLevelObserver {
     private final JLabel splitterLabel;
-
-    SplitterWindow(){
-        setSize(300, 400);
+    SplitterWindow() {
+        setSize(300, 300);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setTitle("Alarm Window");
+        setTitle("Splitter Window");
         setLocationRelativeTo(null);
         setLayout(new FlowLayout());
-
-
-        splitterLabel = new JLabel("OFF");
+        splitterLabel = new JLabel("Splitter OFF");
         splitterLabel.setFont(new Font("", Font.BOLD, 25));
         add(splitterLabel);
         setVisible(true);
     }
-
-    public void split(int waterLevel){
-        splitterLabel.setText( waterLevel >= 75 ? "Splitter ON" : "Splitter OFF");
+    public void update(int waterLevel) {
+        splitterLabel.setText(waterLevel >= 75 ? "Splitter ON" : "Splitter OFF");
     }
 }
-
-
-
-class WaterTankWindow extends JFrame{
-
-    private AlarmWindow alarmWindow;
-    private DisplayWindow displayWindow;
-    private SplitterWindow splitterWindow;
+class WaterTankWindow extends WaterLevelObserver {
+    private WaterLevelObserver alarmWindow;
+    private WaterLevelObserver displayWindow;
+    private WaterLevelObserver splitterWindow;
     private final JSlider waterLevelSlider;
-
-    WaterTankWindow(){
-        setSize(300, 400);
+    WaterTankWindow() {
+        setSize(300, 300);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setTitle("Water Tank Window");
         setLocationRelativeTo(null);
         setLayout(new FlowLayout());
-
-
         waterLevelSlider = new JSlider(JSlider.VERTICAL, 0, 100, 0);
         waterLevelSlider.setFont(new Font("", Font.BOLD, 25));
         waterLevelSlider.setMajorTickSpacing(25);
         waterLevelSlider.setMinorTickSpacing(5);
         waterLevelSlider.setPaintLabels(true);
-
-
         waterLevelSlider.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
+            public void stateChanged(ChangeEvent ce) {
                 int waterLevel = waterLevelSlider.getValue();
-                displayWindow.displayWaterLevel(waterLevel);
-                alarmWindow.operateAlarm(waterLevel);
-                splitterWindow.split(waterLevel);
+                alarmWindow.update(waterLevel);
+                displayWindow.update(waterLevel);
+                splitterWindow.update(waterLevel);
             }
         });
         add(waterLevelSlider);
     }
-
-    public void setAlarmWindow(AlarmWindow alarmWindow) {
+    public void addAlarmWindow(AlarmWindow alarmWindow) {
         this.alarmWindow = alarmWindow;
     }
-    public void setDisplayWindow(DisplayWindow displayWindow) {
+    public void addDisplayWindow(DisplayWindow displayWindow) {
         this.displayWindow = displayWindow;
     }
-    public void setSplitterWindow(SplitterWindow splitterWindow) {
+    public void addSplitterWindow(SplitterWindow splitterWindow) {
         this.splitterWindow = splitterWindow;
     }
 }
-
-
 class Demo {
     public static void main(String[] args) {
         WaterTankWindow wt = new WaterTankWindow();
-        wt.setAlarmWindow(new AlarmWindow());
-        wt.setDisplayWindow(new DisplayWindow());
-        wt.setSplitterWindow(new SplitterWindow());
+        wt.addAlarmWindow(new AlarmWindow());
+        wt.addDisplayWindow(new DisplayWindow());
+        wt.addSplitterWindow(new SplitterWindow());
         wt.setVisible(true);
     }
 }
